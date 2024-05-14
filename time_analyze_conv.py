@@ -112,6 +112,8 @@ def training_run(epochs=20, batch_size=64, data=2, dev='cuda', model_type=0, n_h
         model_dim.append(1024)
     model_dim.append(10)
 
+    dev = "cuda" if torch.cuda.is_available() else "cpu"
+
     # BP-SGD
     if model_type == 0:
         model = IL_Conv.IL(type=0, lr=.014)

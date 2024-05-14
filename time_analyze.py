@@ -92,6 +92,8 @@ def training_run(epochs=110, batch_size=64, data=1, dev='cuda', model_type=0, n_
         model_dim.append(1024)
     model_dim.append(10)
 
+    dev = "mps" if torch.backends.mps.is_available() else "cpu"
+
     # BP-SGD
     if model_type == 0:
         model = BP.BP(model_dim, type=0, alpha=.01, smax=True)

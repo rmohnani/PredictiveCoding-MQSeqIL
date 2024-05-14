@@ -1,0 +1,42 @@
+\begin{thebibliography}{6}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Alonso et~al.(2024)Alonso, Krichmar, and Neftci]{alonso2024understanding}
+Alonso, N., Krichmar, J., and Neftci, E.
+\newblock Understanding and improving optimization in predictive coding networks.
+\newblock In \emph{Proceedings of the AAAI Conference on Artificial Intelligence}, volume~38, 2024.
+
+\bibitem[Griffin et~al.(2007)Griffin, Holub, and Perona]{caltech256}
+Griffin, G., Holub, A., and Perona, P.
+\newblock Caltech-256 object category dataset.
+\newblock \emph{CalTech Report}, 03 2007.
+
+\bibitem[Krizhevsky et~al.()Krizhevsky, Nair, and Hinton]{cifar100}
+Krizhevsky, A., Nair, V., and Hinton, G.
+\newblock Cifar-100 (canadian institute for advanced research).
+\newblock URL \url{http://www.cs.toronto.edu/~kriz/cifar.html}.
+
+\bibitem[LeCun et~al.(2012)LeCun, Bottou, Orr, and M{\"u}ller]{LeCuBottOrrMull9812}
+LeCun, Y.~A., Bottou, L., Orr, G.~B., and M{\"u}ller, K.-R.
+\newblock \emph{Efficient BackProp}, pp.\  9--48.
+\newblock Springer Berlin Heidelberg, Berlin, Heidelberg, 2012.
+\newblock ISBN 978-3-642-35289-8.
+\newblock \doi{10.1007/978-3-642-35289-8_3}.
+\newblock URL \url{https://doi.org/10.1007/978-3-642-35289-8_3}.
+
+\bibitem[Orchard \& Sun(2019)Orchard and Sun]{orchard2019making}
+Orchard, J. and Sun, W.
+\newblock Making predictive coding networks generative.
+\newblock \emph{arXiv preprint arXiv:1910.12151}, 2019.
+
+\bibitem[Uetz \& Behnke(2009)Uetz and Behnke]{labelme50k}
+Uetz, R. and Behnke, S.
+\newblock Large-scale object recognition with cuda-accelerated hierarchical neural networks.
+\newblock volume~1, pp.\  536 -- 541, 12 2009.
+\newblock \doi{10.1109/ICICISYS.2009.5357786}.
+
+\end{thebibliography}

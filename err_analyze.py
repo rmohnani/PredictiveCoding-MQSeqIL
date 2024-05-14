@@ -96,6 +96,8 @@ def record_infer_seq(model, images, global_target, local_mse, seed):
 
 def record_infer_stnd(model, images, global_target, local_mse, seed):
     with torch.no_grad():
+        #decay = (1 / (1 + i))
+        decay = 1
         h = model.initialize_values(images)
         targ = [h[i].clone() for i in range(model.num_layers)]
         targ[-1] = (1 - model.mod_prob) * global_target.clone() + model.mod_prob * softmax(targ[-1])

@@ -180,5 +180,5 @@ def training_run(epochs=80, batch_size=64, data=2, num_seeds=1, alpha=[1], beta=
 
 
     #print(f'Best Learning Rate, at Iterations{max_iters}, Model Type{model_type}:', best_lr)
-    with open(f'data/MLP_Type{model_type}_data{data}_epochs{epochs}_{batch_size}.data','wb') as filehandle:
+    with open(f'data/MLP_Type{model_type}_data{data}_hlayers{n_hlayers}_epochs{epochs}_{batch_size}.data','wb') as filehandle:
         pickle.dump([test_accs[best_lr], test_losses[best_lr], alpha[best_lr]], filehandle)

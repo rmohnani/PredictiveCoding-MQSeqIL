@@ -121,29 +121,29 @@ def plot_conv():
                 axs[d].fill_between(x, (100 - acc) - accstd, (100 - acc) + accstd, color=clr[t], alpha=.2)
 
 
-        print('\nTiny ImageNet')
-        for t in range(5):
-            with open(f'data/ConvImgN_Type{t}_epochs20_mbatch64_arch0.data', 'rb') as filehandle:
-                testdata = pickle.load(filehandle)
+        # print('\nTiny ImageNet')
+        # for t in range(5):
+        #     with open(f'data/ConvImgN_Type{t}_epochs20_mbatch64_arch0.data', 'rb') as filehandle:
+        #         testdata = pickle.load(filehandle)
 
-            #Avg run over seeds, then truncate at convergence point
-            acc = compute_means(testdata[0], scale=100)
-            accstd = compute_stds(testdata[0], scale=100)
-            idx = torch.argmax(acc)
-            idx = min(idx + 2, 40)
-            x = torch.linspace(0, idx/2, idx)
-            acc = acc[0:idx]
-            accstd = accstd[0:idx]
+        #     #Avg run over seeds, then truncate at convergence point
+        #     acc = compute_means(testdata[0], scale=100)
+        #     accstd = compute_stds(testdata[0], scale=100)
+        #     idx = torch.argmax(acc)
+        #     idx = min(idx + 2, 40)
+        #     x = torch.linspace(0, idx/2, idx)
+        #     acc = acc[0:idx]
+        #     accstd = accstd[0:idx]
 
-            best_acc1 = compute_max_means_std(testdata[0], scale=100)
-            best_acc5 = compute_max_means_std(testdata[2], scale=100)
-            print(f'{labels[t]} Conv', f'Test Acc(Top1) Best(Mean):{round(best_acc1[0], 2)}',
-                  f'  (STD):{round(best_acc1[1], 2)}',
-                  f'   Test Acc(Top5) Best(Mean):{round(best_acc5[0], 2)}',
-                  f'  (STD):{round(best_acc5[1], 2)}')
+        #     best_acc1 = compute_max_means_std(testdata[0], scale=100)
+        #     best_acc5 = compute_max_means_std(testdata[2], scale=100)
+        #     print(f'{labels[t]} Conv', f'Test Acc(Top1) Best(Mean):{round(best_acc1[0], 2)}',
+        #           f'  (STD):{round(best_acc1[1], 2)}',
+        #           f'   Test Acc(Top5) Best(Mean):{round(best_acc5[0], 2)}',
+        #           f'  (STD):{round(best_acc5[1], 2)}')
 
-            axs[2].plot(x, 100 - acc, label=labels[t], linewidth=2.25, color=clr[t], alpha=.7)
-            axs[2].fill_between(x, (100 - acc) - accstd, (100 - acc) + accstd, color=clr[t], alpha=.2)
+        #     axs[2].plot(x, 100 - acc, label=labels[t], linewidth=2.25, color=clr[t], alpha=.7)
+        #     axs[2].fill_between(x, (100 - acc) - accstd, (100 - acc) + accstd, color=clr[t], alpha=.2)
 
         axs[0].legend(ncol=2)
         axs[1].set(xlabel='Epoch')
@@ -550,6 +550,215 @@ def plot_T_Analyze_training():
         # pylab.tight_layout()
         pylab.show()
 
+##############################################################
+
+## NEW PLOTS
+def plot_cifar_100_fc():
+    with torch.no_grad():
+        dlabel = ['CIFAR-100']
+        nlayers = [5, 10]
+        labels = ['BP', 'BP-Adam', 'SeqIL', 'SeqIL-MQ', 'SeqIL-Adam']
+        clr = ['black', 'blue', 'purple', 'red', 'brown']
+        fig, axs = pylab.subplots(1, 2, figsize=(7, 1.5), constrained_layout=True)
+        data_dir = "data/Output-CIFAR_100_Fc_Run2"
+
+        for i in range(len(nlayers)):
+            nlayer = nlayers[i]
+            print(f'\n{dlabel[0]}')
+            for t in range(5):
+                with open(f'{data_dir}/MLP_Type{t}_data5_hlayers{nlayer}_epochs30_64.data','rb') as filehandle:
+                    testdata = pickle.load(filehandle)
+                best_acc = compute_max_means_std(testdata[0], scale=100)
+                acc = compute_means(testdata[0], scale=100)
+                accstd = compute_stds(testdata[0], scale=100)
+                idx = torch.argmax(acc)
+                idx = min(idx + 3, len(acc))
+                x = torch.linspace(0, idx, idx)
+                acc = acc[0:idx]
+                accstd = accstd[0:idx]
+
+                print(f'{labels[t]}', f'Test Acc Best(Mean):{round(best_acc[0], 2)}',
+                                      f'  (STD):{round(best_acc[1], 2)}',
+                                      f'  (Epoch#):{round(best_acc[2], 2)}',
+                                      f'  LR:{testdata[2]}')
+
+                axs[i].plot(x, 100 - acc, label=labels[t], linewidth=2.25, color=clr[t], alpha=.7)
+                axs[i].fill_between(x, (100 - acc) - accstd, (100 - acc) + accstd, color=clr[t], alpha=.2)
+            axs[i].set(xlabel = "Epoch")
+            axs[i].set(ylabel = "Test Error (%)")
+            axs[i].set(ylim=[60,100])
+            axs[i].set(title= f"CIFAR-100 (MLP) - {nlayer} nlayers")
+        axs[0].legend(ncol=2)
+        fig.suptitle("Fully Connected Networks", fontsize = 12)
+        pylab.show()
+
+def plot_cifar_100_conv():
+    with torch.no_grad():
+        dlabel = ['CIFAR-100']
+        model_size = ['Small']
+        labels = ['BP', 'BP-Adam', 'SeqIL', 'SeqIL-MQ', 'SeqIL-Adam']
+        clr = ['black', 'blue', 'purple', 'red', 'brown']
+        fig, axs = pylab.subplots(1, 1, figsize=(7, 1.5), constrained_layout=True)
+        data_dir = "data/Output-CIFAR_100_Conv_Run2"
+
+        for i in range(len(model_size)):
+            curr_size = model_size[i]
+            print(f'\n{dlabel[0]}')
+            for t in range(5):
+                with open(f'{data_dir}/Conv_Type{t}_data5_smallTrue_epochs30_64.data','rb') as filehandle:
+                    testdata = pickle.load(filehandle)
+                best_acc = compute_max_means_std(testdata[0], scale=100)
+                acc = compute_means(testdata[0], scale=100)
+                accstd = compute_stds(testdata[0], scale=100)
+                idx = torch.argmax(acc)
+                idx = min(idx + 3, len(acc))
+                x = torch.linspace(0, idx, idx)
+                acc = acc[0:idx]
+                accstd = accstd[0:idx]
+
+                print(f'{labels[t]} Conv', f'Test Acc Best(Mean):{round(best_acc[0], 2)}',
+                                      f'  (STD):{round(best_acc[1], 2)}',
+                                      f'  (Epoch#):{round(best_acc[2], 2)}',
+                                      f'  LR:{testdata[2]}')
+
+                axs.plot(x, 100 - acc, label=labels[t], linewidth=2.25, color=clr[t], alpha=.7)
+                axs.fill_between(x, (100 - acc) - accstd, (100 - acc) + accstd, color=clr[t], alpha=.2)
+            axs.set(xlabel = "Epoch")
+            axs.set(ylabel = "Test Error (%)")
+            axs.set(ylim=[60,100])
+            axs.set(title= f"CIFAR-100 (Conv) - {curr_size} size")
+        axs.legend(ncol=2)
+        fig.suptitle("Convolutional Networks", fontsize = 12)
+        pylab.show()
+
+def plot_labelme50_conv():
+    with torch.no_grad():
+        dlabel = ['LABEL_ME_50K']
+        model_size = ['Small', 'Big']
+        labels = ['BP', 'BP-Adam', 'SeqIL', 'SeqIL-MQ', 'SeqIL-Adam']
+        clr = ['black', 'blue', 'purple', 'red', 'brown']
+        fig, axs = pylab.subplots(1, 2, figsize=(7, 1.5), constrained_layout=True)
+        data_dir = "data/Output-LabelMe50k"
+
+        for i in range(len(model_size)):
+            curr_size = True if model_size[i] == "Small" else False
+
+            print(f'\n{dlabel[0]}')
+            for t in range(5):
+                with open(f'{data_dir}/LabelMe50K{t}_small{curr_size}_epochs5_mbatch64_arch0.data','rb') as filehandle:
+                    testdata = pickle.load(filehandle)
+                best_acc = compute_max_means_std(testdata[0], scale=100)
+                acc = compute_means(testdata[0], scale=100)
+                accstd = compute_stds(testdata[0], scale=100)
+                idx = torch.argmax(acc)
+                idx = min(idx + 3, len(acc))
+                x = torch.linspace(0, idx, idx)
+                acc = acc[0:idx]
+                accstd = accstd[0:idx]
+                print(len(x), len(acc))
+                assert(len(x) == len(acc))
+
+                print(f'{labels[t]} Conv', f'Test Acc Best(Mean):{round(best_acc[0], 2)}',
+                                      f'  (STD):{round(best_acc[1], 2)}',
+                                      f'  (Epoch#):{round(best_acc[2], 2)}',
+                                      f'  LR:{testdata[2]}')
+
+                axs[i].plot(x, 100 - acc, label=labels[t], linewidth=2.25, color=clr[t], alpha=.7)
+                axs[i].fill_between(x, (100 - acc) - accstd, (100 - acc) + accstd, color=clr[t], alpha=.2)
+            axs[i].set(xlabel = "Epoch")
+            axs[i].set(ylabel = "Test Error (%)")
+            axs[i].set(ylim=[0,100])
+            axs[i].set(title= f"LABELME50k (Conv) - {model_size[i]} size")
+        axs[0].legend(ncol=2)
+        fig.suptitle("Convolutional Networks", fontsize = 12)
+        pylab.show()
+
+def plot_caltech_256_conv():
+    with torch.no_grad():
+        dlabel = ['Caltech-256']
+        model_size = ['True', 'False']
+        labels = ['BP', 'BP-Adam', 'SeqIL', 'SeqIL-MQ', 'SeqIL-Adam']
+        clr = ['black', 'blue', 'purple', 'red', 'brown']
+        fig, axs = pylab.subplots(1, 2, figsize=(7, 1.5), constrained_layout=True)
+        data_dir = "data/Output-Caltech_256_Conv_Run2"
+
+        for i in range(len(model_size)):
+            curr_size = "Small = " + model_size[i]
+            print(f'\n{dlabel[0]}')
+            for t in range(5):
+                with open(f'{data_dir}/Conv_Type{t}_data6_small{model_size[i]}_niters3_epochs15_64.data','rb') as filehandle:
+                    testdata = pickle.load(filehandle)
+                best_acc = compute_max_means_std(testdata[0], scale=100)
+                acc = compute_means(testdata[0], scale=100)
+                accstd = compute_stds(testdata[0], scale=100)
+                idx = torch.argmax(acc)
+                idx = min(idx + 3, len(acc))
+                x = torch.linspace(0, idx, idx)
+                acc = acc[0:idx]
+                accstd = accstd[0:idx]
+
+                print(f'{labels[t]} Conv', f'Test Acc Best(Mean):{round(best_acc[0], 2)}',
+                                    f'  (STD):{round(best_acc[1], 2)}',
+                                    f'  (Epoch#):{round(best_acc[2], 2)}',
+                                    f'  LR:{testdata[2]}')
+
+                axs[i].plot(x, 100 - acc, label=labels[t], linewidth=2.25, color=clr[t], alpha=.7)
+                axs[i].fill_between(x, (100 - acc) - accstd, (100 - acc) + accstd, color=clr[t], alpha=.2)
+            axs[i].set(xlabel = "Epoch")
+            axs[i].set(ylabel = "Test Error (%)")
+            axs[i].set(ylim=[60,100])
+            axs[i].set(title= f"Caltech-256 (Conv) - {curr_size} size")
+        axs[0].legend(ncol=2)
+        fig.suptitle("Convolutional Networks", fontsize = 12)
+        pylab.show()
+
+def plot_cifar_100_conv_3():
+    with torch.no_grad():
+        dlabel = ['CIFAR-100']
+        model_size = ['Small']
+        labels = ['BP', 'BP-Adam', 'SeqIL', 'SeqIL-MQ', 'SeqIL-Adam']
+        clr = ['black', 'blue', 'purple', 'red', 'brown']
+        fig, axs = pylab.subplots(2, 3, figsize=(7, 1.5), constrained_layout=True)
+        data_dir = "data/Output-CIFAR_100_Conv_Run3"
+        batch_sizes = ['32', '64', '128']
+        n_iters = ['10', '15']
+        counter = 0
+
+        for i in range(len(model_size)):
+            curr_size = model_size[i]
+            print(f'\n{dlabel[0]}')
+            for n_iter in n_iters:
+                for bs in batch_sizes:
+                    for t in range(5):
+                        with open(f'{data_dir}/Conv_Type{t}_data5_smallTrue_niters{n_iter}_epochs15_{bs}.data','rb') as filehandle:
+                            testdata = pickle.load(filehandle)
+                        best_acc = compute_max_means_std(testdata[0], scale=100)
+                        acc = compute_means(testdata[0], scale=100)
+                        accstd = compute_stds(testdata[0], scale=100)
+                        idx = torch.argmax(acc)
+                        idx = min(idx + 3, len(acc))
+                        x = torch.linspace(0, idx, idx)
+                        acc = acc[0:idx]
+                        accstd = accstd[0:idx]
+
+                        print(f'{labels[t]} Conv', f'Test Acc Best(Mean):{round(best_acc[0], 2)}',
+                                            f'  (STD):{round(best_acc[1], 2)}',
+                                            f'  (Epoch#):{round(best_acc[2], 2)}',
+                                            f'  LR:{testdata[2]}')
+
+                        axs[counter // 3][counter % 3].plot(x, 100 - acc, label=labels[t], linewidth=2.25, color=clr[t], alpha=.7)
+                        axs[counter // 3][counter % 3].fill_between(x, (100 - acc) - accstd, (100 - acc) + accstd, color=clr[t], alpha=.2)
+                    axs[counter // 3][counter % 3].set(xlabel = "Epoch")
+                    axs[counter // 3][counter % 3].set(ylabel = "Test Error (%)")
+                    axs[counter // 3][counter % 3].set(ylim=[60,100])
+                    axs[counter // 3][counter % 3].set(title= f"CIFAR-100 (Conv) - {curr_size} size - N_iter {n_iter} - Batch Size {bs}")
+                    counter += 1
+        axs[0][0].legend(ncol=3)
+        fig.suptitle("Convolutional Networks", fontsize = 12)
+        pylab.show()
+    
+
+
 
 #plot_conv()
 #plot_MLP()
@@ -559,4 +768,4 @@ def plot_T_Analyze_training():
 #plot_speed_analysis()
 #plot_T_anlz()
 #plot_prox_Analyze()
-plot_prox()
+# plot_prox()

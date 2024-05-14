@@ -255,7 +255,9 @@ def train_model(train_loader, test_loader, model, dev, test_iter=0, model_type=0
     with torch.no_grad():
         iter = 0
         while iter <= test_iter:
+            print("iter", iter)
             for batch_idx, (images, y) in enumerate(train_loader):
+                print("loop", batch_idx)
                 images = images.view(y.size(0), -1).to(dev)
                 y = y.to(dev)
                 target = F.one_hot(y, num_classes=10)
